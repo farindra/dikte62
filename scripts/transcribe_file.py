@@ -1,5 +1,11 @@
 """Transkripsi satu file audio → TXT (paragraf), SRT, dan JSON segmen."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -54,7 +60,7 @@ def main() -> None:
     dur = rows[-1]["end"] if rows else 0.0
 
     # SRT
-    with open(os.path.join(a.outdir, base + ".srt"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".srt"), "w", encoding="utf-8") as f:
         for r in rows:
             f.write(f"{r['id']}\n{fmt_ts(r['start'])} --> {fmt_ts(r['end'])}\n{r['text']}\n\n")
 
@@ -67,11 +73,11 @@ def main() -> None:
             cur = []
     if cur:
         paras.append(" ".join(cur))
-    with open(os.path.join(a.outdir, base + ".txt"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".txt"), "w", encoding="utf-8") as f:
         f.write("\n\n".join(paras) + "\n")
 
     # JSON
-    with open(os.path.join(a.outdir, base + ".json"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".json"), "w", encoding="utf-8") as f:
         json.dump(
             {
                 "file": os.path.basename(a.audio),

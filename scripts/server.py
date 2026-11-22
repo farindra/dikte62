@@ -4,6 +4,12 @@ Jalankan:  .venv/bin/python scripts/server.py --port 8777
 Hanya mendengarkan di 127.0.0.1 — tidak ada data yang keluar dari mesin.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -38,7 +44,7 @@ def make_job() -> tuple[str, str]:
     jid = time.strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:6]
     jobdir = os.path.join(JOBS, jid)
     os.makedirs(jobdir, exist_ok=True)
-    with open(os.path.join(jobdir, "job.json"), "w") as f:
+    with open(os.path.join(jobdir, "job.json"), "w", encoding="utf-8") as f:
         json.dump({"state": "queued", "progress": 0, "step": "menunggu antrean", "log": []}, f)
     return jid, jobdir
 
@@ -58,7 +64,7 @@ def pump() -> None:
         while len(RUNNING) < MAX_CONCURRENT and QUEUE:
             jid, cmd = QUEUE.pop(0)
             jobdir = os.path.join(JOBS, jid)
-            log = open(os.path.join(jobdir, "run.log"), "w")
+            log = open(os.path.join(jobdir, "run.log"), "w", encoding="utf-8")
             proc = subprocess.Popen(cmd, **spawn_kwargs(log))
             RUNNING[jid] = proc
             started.append(jid)
@@ -79,7 +85,7 @@ def write_state(jid: str, state: str, step: str) -> None:
     path = os.path.join(JOBS, jid, "job.json")
     data = read_json(path, {}) or {}
     data.update(state=state, step=step, finished=time.time())
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
 
 
@@ -126,7 +132,7 @@ def load_env() -> None:
     path = os.path.join(ROOT, ".env")
     if not os.path.exists(path):
         return
-    for line in open(path):
+    for line in open(path, encoding="utf-8"):
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
@@ -166,7 +172,7 @@ def meeting_dirs() -> list[str]:
 
 def read_json(path: str, default=None):
     try:
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except Exception:  # noqa: BLE001
         return default
@@ -453,7 +459,7 @@ class Handler(BaseHTTPRequestHandler):
             meta["archived"] = bool(payload.get("archived"))
             if meta["archived"]:
                 meta["archived_at"] = int(time.time())
-            with open(meta_path, "w") as f:
+            with open(meta_path, "w", encoding="utf-8") as f:
                 json.dump(meta, f, ensure_ascii=False, indent=2)
             self.send_json({"ok": True, "archived": meta["archived"]})
             return
@@ -623,7 +629,7 @@ class Handler(BaseHTTPRequestHandler):
             for k, v in names.items():
                 if re.match(r"^S[0-9]+$", str(k)):
                     current[k] = str(v)[:60]
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 json.dump(current, f, ensure_ascii=False, indent=2)
             self.send_json({"ok": True, "speaker_names": current})
             return
@@ -643,7 +649,7 @@ class Handler(BaseHTTPRequestHandler):
             path = os.path.join(MEETINGS, mid, "approvals.json")
             data = read_json(path, {}) or {}
             data[key] = bool(payload.get("approved"))
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             self.send_json({"ok": True, "approvals": data})
             return

@@ -38,7 +38,7 @@ for s in segments:
     print(line, flush=True)
 elapsed = time.time() - t1
 dur = segments and 0 or 0
-with open(out, "w") as f:
+with open(out, "w", encoding="utf-8") as f:
     f.write("\n".join(lines) + "\n")
 print(f"\n=== ASR {elapsed:.1f}s | audio {float(sys.argv[7]) if len(sys.argv) > 7 else 0}s ===", flush=True)
 print("\nFULL TEXT:\n" + " ".join(l.split("] ", 1)[1] for l in lines), flush=True)

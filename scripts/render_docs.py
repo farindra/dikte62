@@ -1,5 +1,11 @@
 """Render facts.json + artifacts.json menjadi dokumen Markdown dan CSV Jira."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import csv
 import json
@@ -98,7 +104,7 @@ def render_summary(facts: dict) -> str:
 
 def write_jira(art: dict, facts: dict, path: str) -> int:
     n = 0
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["Issue Type", "Summary", "Description", "Priority", "Epic Name", "Labels", "Refs"])
         for ep in art.get("epics", []):
@@ -126,8 +132,8 @@ def main() -> None:
     p.add_argument("--outdir", default="docs/generated")
     a = p.parse_args()
 
-    facts = json.load(open(a.facts))
-    art = json.load(open(a.artifacts))
+    facts = json.load(open(a.facts, encoding="utf-8"))
+    art = json.load(open(a.artifacts, encoding="utf-8"))
     os.makedirs(a.outdir, exist_ok=True)
 
     files = {
@@ -136,7 +142,7 @@ def main() -> None:
         "EPIC-STORY.md": render_stories(art),
     }
     for name, content in files.items():
-        with open(os.path.join(a.outdir, name), "w") as f:
+        with open(os.path.join(a.outdir, name), "w", encoding="utf-8") as f:
             f.write(content)
         print(f"[ok] {a.outdir}/{name} ({len(content)} karakter)")
 

@@ -1,5 +1,11 @@
 """Generate BRD + Epic + User Story dari facts.json memakai Gemini."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -22,10 +28,10 @@ def main() -> None:
     if not key:
         sys.exit("GEMINI_API_KEY belum diset")
 
-    template = open(a.prompt).read()
+    template = open(a.prompt, encoding="utf-8").read()
     idx = template.find("## PERAN")
     body = template[idx:] if idx >= 0 else template
-    facts = json.load(open(a.facts))
+    facts = json.load(open(a.facts, encoding="utf-8"))
     prompt = body.replace("{{FACTS}}", json.dumps(facts, ensure_ascii=False, indent=1))
 
     print(f"[info] prompt {len(prompt)} karakter | model {a.model}", flush=True)
@@ -37,7 +43,7 @@ def main() -> None:
         data = data[0] if len(data) == 1 and isinstance(data[0], dict) else {"epics": data}
     if "brd" not in data and "epics" not in data:
         data = {"brd": data}
-    with open(a.out, "w") as f:
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     print(f"[ok] {a.out} | epics={len(data.get('epics', []))} "
           f"stories={sum(len(e.get('stories', [])) for e in data.get('epics', []))}", flush=True)

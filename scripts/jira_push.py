@@ -9,6 +9,12 @@ Pemakaian:
   python scripts/jira_push.py --artifacts ... --dry-run
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import base64
 import json
@@ -116,7 +122,7 @@ def main() -> None:
     if not a.dry_run and not (a.base and email and token):
         sys.exit("JIRA_BASE_URL / JIRA_EMAIL / JIRA_API_TOKEN belum lengkap")
 
-    art = json.load(open(a.artifacts))
+    art = json.load(open(a.artifacts, encoding="utf-8"))
     issues = build_issues(art, a.project, epic_field, set_priority)
     print(f"[info] {len(issues)} issue akan dikirim ke {a.project}", flush=True)
 
@@ -157,7 +163,7 @@ def main() -> None:
             result.append({"ref": it["ref"], "kind": it["kind"], "error": repr(e)})
             print(f"  × {it['ref']} error {e}", flush=True)
 
-    with open(a.out, "w") as f:
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     ok = sum(1 for r in result if r.get("key"))
     print(f"[selesai] {ok}/{len(issues)} issue dibuat → {a.out}", flush=True)

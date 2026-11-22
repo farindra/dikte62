@@ -4,6 +4,12 @@ Jalankan: python scripts/_mock_jira.py --port 8899
 Lalu:     JIRA_BASE_URL=http://127.0.0.1:8899 python scripts/jira_push.py ...
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import time

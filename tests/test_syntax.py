@@ -16,7 +16,7 @@ class SyntaxTest(unittest.TestCase):
     def test_json_files_parse(self):
         for path in [ROOT / "schema/facts.schema.json", ROOT / "glossary.json"]:
             with self.subTest(path=path.name):
-                json.loads(path.read_text())
+                json.loads(path.read_text(encoding="utf-8"))
 
     def test_required_files_exist(self):
         for name in ["README.md", "LICENSE", "requirements.txt", ".gitignore",

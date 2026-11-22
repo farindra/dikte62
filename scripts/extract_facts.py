@@ -4,6 +4,12 @@ Menghasilkan facts.json yang mengikuti schema/facts.schema.json.
 Kunci API dibaca dari variabel lingkungan GEMINI_API_KEY.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -77,12 +83,12 @@ def main() -> None:
     if not key:
         sys.exit("GEMINI_API_KEY belum diset")
 
-    template = open(a.prompt).read()
+    template = open(a.prompt, encoding="utf-8").read()
     # Buang bagian meta di atas "## PERAN"
     idx = template.find("## PERAN")
     body = template[idx:] if idx >= 0 else template
 
-    transcript = open(a.transcript).read()
+    transcript = open(a.transcript, encoding="utf-8").read()
     prompt = (
         body.replace("{{PROJECT}}", a.project)
         .replace("{{GLOSSARY}}", a.glossary or "(tidak ada)")
@@ -101,7 +107,7 @@ def main() -> None:
     if a.date and not facts.get("meeting", {}).get("date"):
         facts.setdefault("meeting", {})["date"] = a.date
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
-    with open(a.out, "w") as f:
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump(facts, f, ensure_ascii=False, indent=2)
     print(f"[ok] {a.out}", flush=True)
 

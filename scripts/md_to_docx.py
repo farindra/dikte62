@@ -1,5 +1,11 @@
 """Konversi Markdown sederhana (heading, bullet, tabel, bold) menjadi .docx."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import os
 import re
@@ -105,7 +111,7 @@ def main() -> None:
     a = p.parse_args()
 
     for src in a.inputs:
-        md = open(src).read()
+        md = open(src, encoding="utf-8").read()
         name = os.path.splitext(os.path.basename(src))[0]
         doc = convert(md, title=name)
         dst = os.path.join(a.outdir, name + ".docx")

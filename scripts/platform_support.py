@@ -4,6 +4,12 @@ Dipakai bersama oleh pipeline agar jalan di macOS (Metal), Windows/Linux (CUDA),
 dan CPU murni tanpa mengubah kode.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import os
 import platform
 import shutil
@@ -24,6 +30,18 @@ def _ensure_cache() -> None:
 
 
 _ensure_cache()
+
+
+def _utf8_console() -> None:
+    """Aman di Windows (cp1252/cp437) dan locale C: paksa stdout/stderr UTF-8."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:  # noqa: BLE001
+            pass
+
+
+_utf8_console()
 
 
 def ffmpeg_bin() -> str:

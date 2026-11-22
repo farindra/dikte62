@@ -4,6 +4,12 @@ Fokus pada hal yang paling berbahaya: item tanpa bukti, timestamp ngawur,
 enum salah, dan ID duplikat. Skema lengkap ada di schema/facts.schema.json.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import re
@@ -44,7 +50,7 @@ def main() -> None:
     p.add_argument("facts")
     a = p.parse_args()
 
-    data = json.load(open(a.facts))
+    data = json.load(open(a.facts, encoding="utf-8"))
     errors: list[str] = []
     warnings: list[str] = []
 

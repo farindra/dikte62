@@ -6,6 +6,12 @@ Dipisah karena ditemukan bug: pada MPS, kualitas decoder menurun drastis setelah
 menghilangkan efek itu; biaya load model ±4–5 detik.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -61,7 +67,7 @@ def main() -> None:
         }
         for s in segs
     ]
-    with open(a.out, "w") as f:
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump({"language": info.language, "segments": rows}, f, ensure_ascii=False)
     os.remove(wav)
 

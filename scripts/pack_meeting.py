@@ -8,6 +8,12 @@ Struktur yang dihasilkan:
   .data/meetings/<id>/BRD.md / EPIC-STORY.md / RINGKASAN.md / *.docx / jira_import.csv
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -41,18 +47,18 @@ def main() -> None:
     def same(x, y):
         return os.path.abspath(x) == os.path.abspath(y)
 
-    facts = json.load(open(a.facts)) if os.path.exists(a.facts) else {}
+    facts = json.load(open(a.facts, encoding="utf-8")) if os.path.exists(a.facts) else {}
     if os.path.exists(a.facts):
         if not same(a.facts, os.path.join(dst, "facts.json")):
             shutil.copy(a.facts, os.path.join(dst, "facts.json"))
     else:
-        with open(os.path.join(dst, "facts.json"), "w") as f:
+        with open(os.path.join(dst, "facts.json"), "w", encoding="utf-8") as f:
             json.dump({}, f)
     if os.path.exists(a.artifacts):
         if not same(a.artifacts, os.path.join(dst, "artifacts.json")):
             shutil.copy(a.artifacts, os.path.join(dst, "artifacts.json"))
     else:
-        with open(os.path.join(dst, "artifacts.json"), "w") as f:
+        with open(os.path.join(dst, "artifacts.json"), "w", encoding="utf-8") as f:
             json.dump({}, f)
     if not same(a.transcript, os.path.join(dst, "transcript.json")):
         shutil.copy(a.transcript, os.path.join(dst, "transcript.json"))
@@ -68,7 +74,7 @@ def main() -> None:
     prev = {}
     if os.path.exists(os.path.join(dst, "meta.json")):
         try:
-            prev = json.load(open(os.path.join(dst, "meta.json")))
+            prev = json.load(open(os.path.join(dst, "meta.json"), encoding="utf-8"))
         except Exception:  # noqa: BLE001
             prev = {}
     meta = {
@@ -82,7 +88,7 @@ def main() -> None:
         "audio": a.audio,
         "docs": docs,
     }
-    with open(os.path.join(dst, "meta.json"), "w") as f:
+    with open(os.path.join(dst, "meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
 
     print(f"[ok] {dst}")

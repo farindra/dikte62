@@ -8,6 +8,12 @@ dan segmen sangat pendek masih sulit. Hasilnya dipakai sebagai *petunjuk* label
 (S1/S2/...), bukan kebenaran mutlak.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -77,7 +83,7 @@ def main() -> None:
     a = p.parse_args()
 
     t0 = time.time()
-    data = json.load(open(a.transcript))
+    data = json.load(open(a.transcript, encoding="utf-8"))
     segs = data.get("segments_data") or data.get("segments") or []
     print(f"[info] {len(segs)} segmen | memuat audio…", flush=True)
     audio = load_audio(a.audio)
@@ -157,7 +163,7 @@ def main() -> None:
     }
 
     out = a.out or a.transcript.replace(".json", "_speakers.json")
-    with open(out, "w") as f:
+    with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
 
     total = sum(dur.values()) or 1

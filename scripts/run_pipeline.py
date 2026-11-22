@@ -6,6 +6,12 @@ artefak (BRD/Epic/Story) → render Markdown/CSV → DOCX → bungkus untuk UI.
 Progres ditulis ke <jobdir>/job.json agar bisa dipantau UI.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -40,7 +46,7 @@ def load_env() -> None:
     path = os.path.join(ROOT, ".env")
     if not os.path.exists(path):
         return
-    for line in open(path):
+    for line in open(path, encoding="utf-8"):
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
@@ -66,7 +72,7 @@ class Job:
 
     def _write(self) -> None:
         tmp = self.path + ".tmp"
-        with open(tmp, "w") as f:
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(self.data, f, ensure_ascii=False, indent=1)
         os.replace(tmp, self.path)
 

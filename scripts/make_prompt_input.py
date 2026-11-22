@@ -1,5 +1,11 @@
 """Ubah hasil transkripsi (.json) menjadi teks ber-timestamp untuk prompt LLM."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -18,8 +24,8 @@ def main() -> None:
     p.add_argument("--speakers", default="", help="JSON {S1: 'Nama', ...}")
     a = p.parse_args()
 
-    data = json.load(open(a.transcript_json))
-    names = json.load(open(a.speakers)) if a.speakers and os.path.exists(a.speakers) else {}
+    data = json.load(open(a.transcript_json, encoding="utf-8"))
+    names = json.load(open(a.speakers, encoding="utf-8")) if a.speakers and os.path.exists(a.speakers) else {}
     segs = data.get("segments_data") or data.get("segments") or []
     lines = []
     for s in segs:
@@ -32,7 +38,7 @@ def main() -> None:
     if a.out == "-":
         print(text)
     else:
-        with open(a.out, "w") as f:
+        with open(a.out, "w", encoding="utf-8") as f:
             f.write(text)
         print(f"{len(segs)} segmen → {a.out}")
 

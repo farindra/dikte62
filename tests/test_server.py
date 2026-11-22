@@ -45,7 +45,7 @@ def wait_ready(port: int, timeout: float = 30.0) -> bool:
 def start(port: int, *extra: str) -> subprocess.Popen:
     return subprocess.Popen(
         [sys.executable, str(SERVER), "--port", str(port), *extra],
-        cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf-8", errors="replace",
     )
 
 

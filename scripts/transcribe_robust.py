@@ -10,6 +10,12 @@ dengan jendela digeser + temperature lebih tinggi, lalu tandai bagian yang
 benar-benar tidak bisa dipulihkan sebagai "[tidak jelas]".
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -76,7 +82,7 @@ def run_window(args, start: float, dur: float, temp: float, tag: str):
         tail = detail[-1] if detail else f"exit {r.returncode}"
         print(f"[warn] jendela gagal: {tail[:200]}", flush=True)
         return [], time.time() - t0, tail
-    data = json.load(open(out))
+    data = json.load(open(out, encoding="utf-8"))
     os.remove(out)
     return data.get("segments", []), time.time() - t0, ""
 
@@ -102,7 +108,7 @@ def main() -> None:
     # Serialisasi: dua proses ASR bersamaan di GPU yang sama menghasilkan teks sampah.
     lock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".cache")
     os.makedirs(lock_path, exist_ok=True)
-    lock = open(os.path.join(lock_path, "asr.lock"), "w")
+    lock = open(os.path.join(lock_path, "asr.lock"), "w", encoding="utf-8")
     if fcntl:
         fcntl.flock(lock, fcntl.LOCK_EX)
 
@@ -167,7 +173,7 @@ def main() -> None:
         print(f"[win {idx}/{len(offsets)}] {off/60:5.1f}-{min(off+dur,end_limit)/60:5.1f} mnt | {len(good):3d} seg | {el:5.1f}s | {status}", flush=True)
 
     rows.sort(key=lambda r: r["start"])
-    with open(os.path.join(a.outdir, base + ".srt"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".srt"), "w", encoding="utf-8") as f:
         for i, r in enumerate(rows, 1):
             f.write(f"{i}\n{fmt_ts(r['start'])} --> {fmt_ts(r['end'])}\n{r['text']}\n\n")
 
@@ -179,11 +185,11 @@ def main() -> None:
             cur = []
     if cur:
         paras.append(" ".join(cur))
-    with open(os.path.join(a.outdir, base + ".txt"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".txt"), "w", encoding="utf-8") as f:
         f.write("\n\n".join(paras) + "\n")
 
     span = end_limit - a.from_seconds
-    with open(os.path.join(a.outdir, base + ".json"), "w") as f:
+    with open(os.path.join(a.outdir, base + ".json"), "w", encoding="utf-8") as f:
         json.dump({
             "file": os.path.basename(a.audio),
             "engine": f"faster-whisper/{a.model}/{a.device}/{a.compute}",

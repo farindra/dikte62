@@ -1,5 +1,11 @@
 """Terapkan glosarium ke transkrip (hanya entri 'confirmed') + laporkan istilah tentative."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import re
@@ -13,8 +19,8 @@ def main() -> None:
     p.add_argument("-o", "--out", default="")
     a = p.parse_args()
 
-    g = json.load(open(a.glossary))
-    text = open(a.transcript).read()
+    g = json.load(open(a.glossary, encoding="utf-8"))
+    text = open(a.transcript, encoding="utf-8").read()
     original = text
 
     print("[glosarium] penggantian yang diterapkan:")
@@ -37,7 +43,7 @@ def main() -> None:
                 print(f"  {item['from']!r} ({n}x) — {item.get('note','')}")
 
     out = a.out or a.transcript.replace(".txt", "") + "_glossary.txt"
-    with open(out, "w") as f:
+    with open(out, "w", encoding="utf-8") as f:
         f.write(text)
     print(f"\n[ok] {out}")
 

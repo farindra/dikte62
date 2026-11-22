@@ -4,6 +4,12 @@ Hasil: Dikte.app di root proyek. Klik dua kali → server jalan (bila belum) →
 Bundle harus tetap di dalam folder proyek karena memakai runtime di .venv.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import os
 import shutil
 import subprocess
@@ -93,11 +99,11 @@ def main() -> None:
     for sub in ("Contents/MacOS", "Contents/Resources"):
         os.makedirs(os.path.join(APP, sub), exist_ok=True)
 
-    with open(os.path.join(APP, "Contents/Info.plist"), "w") as f:
+    with open(os.path.join(APP, "Contents/Info.plist"), "w", encoding="utf-8") as f:
         f.write(INFO_PLIST)
 
     exe = os.path.join(APP, "Contents/MacOS/Dikte62")
-    with open(exe, "w") as f:
+    with open(exe, "w", encoding="utf-8") as f:
         f.write(LAUNCHER.replace("__ROOT__", ROOT).replace("__PORT__", str(PORT)))
     os.chmod(exe, 0o755)
 

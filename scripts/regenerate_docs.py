@@ -6,6 +6,12 @@ hanya tahap LLM yang dijalankan kembali sehingga owner action item memakai nama.
 Jalankan: python scripts/regenerate_docs.py --id <meeting-id> --jobdir <dir>
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -42,7 +48,7 @@ def main() -> None:
         job.fail(f"rapat {a.id} tidak ditemukan")
         return
 
-    meta = json.load(open(os.path.join(base, "meta.json")))
+    meta = json.load(open(os.path.join(base, "meta.json"), encoding="utf-8"))
     transcript = os.path.join(base, "transcript.json")
     speakers = os.path.join(base, "speakers.json")
     tmp = os.path.join(a.jobdir, "out")

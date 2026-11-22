@@ -21,14 +21,14 @@ class GlossaryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             src = pathlib.Path(tmp) / "transcript.txt"
             dst = pathlib.Path(tmp) / "out.txt"
-            src.write_text(TEXT)
+            src.write_text(TEXT, encoding="utf-8")
             r = subprocess.run(
                 [sys.executable, str(SCRIPT), str(src), "--glossary", str(GLOSSARY),
                  "-o", str(dst)],
-                capture_output=True, text=True, timeout=120,
+                capture_output=True, encoding="utf-8", errors="replace", timeout=120,
             )
             self.assertEqual(r.returncode, 0, r.stderr)
-            out = dst.read_text()
+            out = dst.read_text(encoding="utf-8")
 
         self.assertIn("Rempoa", out)
         self.assertNotIn("rempoha", out.lower())
@@ -40,11 +40,11 @@ class GlossaryTest(unittest.TestCase):
     def test_missing_glossary_is_graceful(self):
         with tempfile.TemporaryDirectory() as tmp:
             src = pathlib.Path(tmp) / "t.txt"
-            src.write_text("halo\n")
+            src.write_text("halo\n", encoding="utf-8")
             r = subprocess.run(
                 [sys.executable, str(SCRIPT), str(src), "--glossary", str(pathlib.Path(tmp) / "nope.json"),
                  "-o", str(pathlib.Path(tmp) / "o.txt")],
-                capture_output=True, text=True, timeout=120,
+                capture_output=True, encoding="utf-8", errors="replace", timeout=120,
             )
         self.assertNotEqual(r.returncode, 0)  # gagal cepat, bukan crash tak jelas
 

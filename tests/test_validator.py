@@ -20,7 +20,7 @@ def run(facts: dict) -> tuple[int, str]:
         json.dump(facts, f)
         path = f.name
     r = subprocess.run([sys.executable, str(VALIDATOR), path],
-                       capture_output=True, text=True, timeout=120)
+                       capture_output=True, encoding="utf-8", errors="replace", timeout=120)
     pathlib.Path(path).unlink(missing_ok=True)
     return r.returncode, r.stdout + r.stderr
 

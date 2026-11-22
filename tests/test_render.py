@@ -27,7 +27,7 @@ class RenderTest(unittest.TestCase):
         cls.out = tmp / "docs"
         r = subprocess.run([sys.executable, str(RENDER), str(facts), str(arts),
                             "--outdir", str(cls.out)],
-                           capture_output=True, text=True, timeout=120)
+                           capture_output=True, encoding="utf-8", errors="replace", timeout=120)
         cls.result = r
 
     @classmethod
@@ -46,20 +46,20 @@ class RenderTest(unittest.TestCase):
                 self.assertGreater(path.stat().st_size, 50)
 
     def test_brd_contains_requirement_and_refs(self):
-        brd = (self.out / "BRD.md").read_text()
+        brd = (self.out / "BRD.md").read_text(encoding="utf-8")
         self.assertIn("BRD Rapat Uji CI", brd)
         self.assertIn("BR-01", brd)
         self.assertIn("R-01", brd)
         self.assertIn("Q-01", brd)
 
     def test_story_has_gherkin(self):
-        story = (self.out / "EPIC-STORY.md").read_text()
+        story = (self.out / "EPIC-STORY.md").read_text(encoding="utf-8")
         self.assertIn("US-01", story)
         self.assertIn("Given", story)
         self.assertIn("then", story)
 
     def test_csv_shape(self):
-        with open(self.out / "jira_import.csv", newline="") as f:
+        with open(self.out / "jira_import.csv", newline="", encoding="utf-8") as f:
             rows = list(csv.reader(f))
         self.assertEqual(rows[0][:5], ["Issue Type", "Summary", "Description", "Priority", "Epic Name"])
         types = [r[0] for r in rows[1:]]

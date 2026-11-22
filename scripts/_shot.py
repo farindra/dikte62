@@ -1,5 +1,11 @@
 """Screenshot UI (desktop + mobile) untuk verifikasi visual. Hanya alat bantu pengembangan."""
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import asyncio
 import os
 import sys

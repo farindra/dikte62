@@ -4,6 +4,12 @@ Lokasi: .data/config.json (permission 600, sudah tercakup .gitignore karena .dat
 Secret tidak pernah dikirim balik ke browser — hanya status "terisi" dan 4 karakter terakhir.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import json
 import os
 import stat
@@ -39,7 +45,7 @@ def load() -> dict:
     data = dict(DEFAULTS)
     if os.path.exists(CONFIG):
         try:
-            with open(CONFIG) as f:
+            with open(CONFIG, encoding="utf-8") as f:
                 data.update({k: v for k, v in json.load(f).items() if k in DEFAULTS})
         except Exception:  # noqa: BLE001
             pass
@@ -60,7 +66,7 @@ def save(patch: dict) -> dict:
         data[k] = v
     os.makedirs(os.path.dirname(CONFIG), exist_ok=True)
     tmp = CONFIG + ".tmp"
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, CONFIG)
     os.chmod(CONFIG, stat.S_IRUSR | stat.S_IWUSR)
@@ -72,7 +78,7 @@ def clear(*keys: str) -> dict:
     for k in keys:
         if k in DEFAULTS:
             data[k] = "" if k not in ("jira_set_priority",) else False
-    with open(CONFIG, "w") as f:
+    with open(CONFIG, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.chmod(CONFIG, stat.S_IRUSR | stat.S_IWUSR)
     return data
@@ -106,7 +112,7 @@ def migrate_from_env() -> bool:
     env_path = os.path.join(ROOT, ".env")
     if not os.path.exists(env_path):
         return False
-    lines = open(env_path).read().splitlines()
+    lines = open(env_path, encoding="utf-8").read().splitlines()
     found = None
     keep = []
     for line in lines:
@@ -121,9 +127,9 @@ def migrate_from_env() -> bool:
     if not data.get("gemini_api_key"):
         save({"gemini_api_key": found})
     keep.append("# Kredensial kini diatur dari UI (Pengaturan) → .data/config.json")
-    with open(env_path + ".bak", "w") as f:
+    with open(env_path + ".bak", "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
-    with open(env_path, "w") as f:
+    with open(env_path, "w", encoding="utf-8") as f:
         f.write("\n".join(keep) + "\n")
     os.chmod(env_path, stat.S_IRUSR | stat.S_IWUSR)
     return True

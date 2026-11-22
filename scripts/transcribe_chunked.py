@@ -3,6 +3,12 @@
 Output ditulis inkremental agar progres tidak hilang bila proses dihentikan.
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import platform_support  # noqa: E402,F401  (stdout UTF-8 + cache default)
+
 import argparse
 import json
 import os
@@ -46,7 +52,7 @@ def main() -> None:
     print(f"[load] {time.time() - t0:.1f}s", flush=True)
 
     jsonl_path = os.path.join(a.outdir, base + ".segments.jsonl")
-    open(jsonl_path, "w").close()
+    open(jsonl_path, "w", encoding="utf-8").close()
 
     offsets = [i * a.chunk for i in range(int(total // a.chunk) + 1)]
     if a.limit:
@@ -72,7 +78,7 @@ def main() -> None:
             condition_on_previous_text=False,
         )
         n = 0
-        with open(jsonl_path, "a") as f:
+        with open(jsonl_path, "a", encoding="utf-8") as f:
             for s in segments:
                 n += 1
                 f.write(
