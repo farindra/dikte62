@@ -43,6 +43,15 @@ def make_job() -> tuple[str, str]:
     return jid, jobdir
 
 
+def spawn_kwargs(log) -> dict:
+    kw = dict(cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, env=os.environ.copy())
+    if os.name == "nt":
+        kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        kw["start_new_session"] = True
+    return kw
+
+
 def pump() -> None:
     with JOB_LOCK:
         started = []
@@ -50,8 +59,7 @@ def pump() -> None:
             jid, cmd = QUEUE.pop(0)
             jobdir = os.path.join(JOBS, jid)
             log = open(os.path.join(jobdir, "run.log"), "w")
-            proc = subprocess.Popen(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
-                                    start_new_session=True, env=os.environ.copy())
+            proc = subprocess.Popen(cmd, **spawn_kwargs(log))
             RUNNING[jid] = proc
             started.append(jid)
     for jid in started:
@@ -87,7 +95,11 @@ def cancel_job(jid: str) -> bool:
             RUNNING.pop(jid, None)
     if proc is not None:
         try:
-            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"],
+                               capture_output=True)
+            else:
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
         except Exception:  # noqa: BLE001
             proc.terminate()
         write_state(jid, "cancelled", "dibatalkan pengguna")
@@ -130,6 +142,7 @@ def job_state(jobdir: str) -> dict:
     return read_json(os.path.join(jobdir, "job.json"), {"state": "unknown"}) or {"state": "unknown"}
 
 import settings_store as cfg  # noqa: E402
+from platform_support import venv_bin_dir  # noqa: E402
 
 MIME = {
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -160,7 +173,27 @@ def read_json(path: str, default=None):
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "DikteReview/0.1"
+    server_version = "Dikte62/0.5"
+    TOKEN = ""
+
+    def _authorized(self) -> bool:
+        if not self.TOKEN:
+            return True
+        q = parse_qs(urlparse(self.path).query)
+        if q.get("token", [""])[0] == self.TOKEN:
+            return True
+        return f"dikte_token={self.TOKEN}" in self.headers.get("Cookie", "")
+
+    def _deny(self) -> None:
+        body = ("<!doctype html><meta charset=utf-8><title>Dikte62</title>"
+                "<body style='font:14px -apple-system;padding:40px;color:#101828'>"
+                "<h3>Akses ditolak</h3><p>Buka URL lengkap dengan <code>?token=…</code> "
+                "seperti yang tertulis di terminal server.</p>").encode()
+        self.send_response(401)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def log_message(self, fmt, *args):  # ringkas
         print(f"{self.address_string()} {fmt % args}", flush=True)
@@ -226,6 +259,19 @@ class Handler(BaseHTTPRequestHandler):
     # ---------- routes ----------
     def do_GET(self) -> None:  # noqa: N802
         u = urlparse(self.path)
+
+        if Handler.TOKEN and parse_qs(u.query).get("token", [""])[0] == Handler.TOKEN:
+            self.send_response(302)
+            self.send_header("Location", u.path)
+            self.send_header("Set-Cookie",
+                             f"dikte_token={Handler.TOKEN}; Path=/; HttpOnly; SameSite=Lax")
+            self.end_headers()
+            return
+
+        if not self._authorized():
+            self._deny()
+            return
+
         path = u.path
 
         if path == "/api/settings":
@@ -330,6 +376,9 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self) -> None:  # noqa: N802
+        if not self._authorized():
+            self._deny()
+            return
         u = urlparse(self.path)
 
         if u.path == "/api/upload":
@@ -605,16 +654,20 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--port", type=int, default=8777)
     p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--token", default=os.environ.get("DIKTE_TOKEN", ""),
+                   help="wajibkan token akses (untuk mode web/LAN)")
     a = p.parse_args()
     load_env()
     if cfg.migrate_from_env():
         print("[dikte] kredensial Gemini dipindah dari .env ke Pengaturan UI", flush=True)
     cfg.apply_env()
-    os.environ["PATH"] = os.path.join(ROOT, ".venv", "bin") + os.pathsep + os.environ.get("PATH", "")
+    os.environ["PATH"] = venv_bin_dir(ROOT) + os.pathsep + os.environ.get("PATH", "")
 
     threading.Thread(target=monitor_loop, daemon=True).start()
+    Handler.TOKEN = a.token
     srv = ThreadingHTTPServer((a.host, a.port), Handler)
-    print(f"[dikte] review UI: http://{a.host}:{a.port}", flush=True)
+    suffix = f"?token={a.token}" if a.token else ""
+    print(f"[dikte] review UI: http://{a.host}:{a.port}/{suffix}", flush=True)
     print(f"[dikte] rapat terdeteksi: {len(meeting_dirs())}", flush=True)
     srv.serve_forever()
 

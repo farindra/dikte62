@@ -10,8 +10,12 @@ import argparse
 import json
 import os
 import subprocess
+import sys
 
 from faster_whisper import WhisperModel
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from platform_support import detect_device, ffmpeg_bin  # noqa: E402
 
 
 def main() -> None:
@@ -21,15 +25,17 @@ def main() -> None:
     p.add_argument("--dur", type=float, required=True)
     p.add_argument("--out", required=True)
     p.add_argument("--model", default="turbo")
-    p.add_argument("--device", default="mps")
-    p.add_argument("--compute", default="float16")
+    p.add_argument("--device", default="auto")
+    p.add_argument("--compute", default="")
     p.add_argument("--lang", default="id")
     p.add_argument("--temp", type=float, default=0.0)
     a = p.parse_args()
 
-    wav = f"/tmp/dikte_one_{os.getpid()}.wav"
+    a.device, a.compute = detect_device(a.device, a.compute)
+    tmpdir = os.environ.get("TEMP") or os.environ.get("TMPDIR") or "/tmp"
+    wav = os.path.join(tmpdir, f"dikte_one_{os.getpid()}.wav")
     subprocess.run(
-        ["ffmpeg", "-v", "error", "-y", "-ss", f"{a.start:.3f}", "-t", f"{a.dur:.3f}",
+        [ffmpeg_bin(), "-v", "error", "-y", "-ss", f"{a.start:.3f}", "-t", f"{a.dur:.3f}",
          "-i", a.audio, "-ar", "16000", "-ac", "1", wav],
         check=True,
     )

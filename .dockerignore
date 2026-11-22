@@ -1,0 +1,16 @@
+.venv/
+.runtime/
+.cache/
+.data/
+docs/generated/
+whisper/
+*.app/
+*.mp3
+*.wav
+*.m4a
+*.mp4
+.env
+.env.bak
+__pycache__/
+*.pyc
+.DS_Store

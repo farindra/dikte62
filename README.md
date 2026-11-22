@@ -7,7 +7,7 @@
 Turn meeting recordings into grounded decisions, BRDs, epics, and Jira-ready user stories.
 Local-first: audio never leaves the machine.
 
-[![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-blue)](https://github.com/farindra/dikte62)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/farindra/dikte62)
 [![Python](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![ASR](https://img.shields.io/badge/ASR-offline%20%C2%B7%20local-brightgreen)](#privacy)
@@ -77,24 +77,31 @@ Every artefact keeps the model and prompt version that produced it.
 
 ## Quick start
 
-Requires macOS 13+ (Apple Silicon recommended). No Homebrew, no sudo — the setup script downloads
-a portable CPython and a static ffmpeg into the project folder.
+No Homebrew, no sudo, no admin rights: the setup downloads a portable CPython and a static ffmpeg
+into the project folder, then creates `.venv/`.
+
+### macOS / Linux
 
 ```bash
 git clone https://github.com/farindra/dikte62.git
 cd dikte62
 bash scripts/setup_runtime.sh      # ~4 GB disk, one time
-
 bash scripts/run_ui.sh             # → http://127.0.0.1:8777
 ```
 
-Or build the double-clickable app:
+Optional desktop app (macOS): `.venv/bin/python scripts/build_app.py` → `open Dikte62.app`
 
-```bash
-.venv/bin/python scripts/build_app.py   # → Dikte62.app
-open Dikte62.app
-bash scripts/stop_ui.sh            # to stop the local server
+### Windows
+
+```bat
+git clone https://github.com/farindra/dikte62.git
+cd dikte62
+setup.bat                          :: unduh runtime + dependensi
+run_ui.bat                         :: nyalakan server + buka browser
 ```
+
+`setup.bat` memakai Python yang sudah terpasang (3.10+) hanya untuk bootstrap; runtime aplikasi
+tetap Python 3.12 portabel di dalam folder proyek.
 
 Then: **+ Proses rekaman** → pick an audio file → watch the pipeline → review → export.
 
@@ -133,6 +140,8 @@ Everything the UI does is also a script:
 | `scripts/md_to_docx.py` | Markdown → `.docx` |
 | `scripts/jira_push.py` | create epics/stories via Jira REST v3 |
 | `scripts/run_pipeline.py` | orchestrates everything for one recording |
+| `scripts/setup.py` | cross-platform bootstrap (Python portabel + venv + ffmpeg) |
+| `scripts/platform_support.py` | device auto-detect (mps/cuda/cpu) + lokasi ffmpeg |
 | `scripts/validate_facts.py` | enforces evidence, timestamps, enums, IDs |
 
 Example:
@@ -169,14 +178,37 @@ misattributed, and overlapping speech is not handled.
 
 | | |
 |---|---|
-| OS | macOS 13+ (developed on macOS 26.1) |
-| CPU | Apple Silicon recommended; Intel works with a different Python build URL |
+| OS | macOS 13+ · Windows 10/11 (x64/ARM64) · Linux (x64/ARM64) |
+| CPU | Apple Silicon (Metal), NVIDIA (CUDA), atau CPU murni |
 | RAM | 8 GB minimum (16 GB comfortable) |
 | Disk | ~4 GB for runtime + models (`small` 461 MB, `turbo` 1.5 GB) |
 | Network | only for LLM/Jira; transcription is fully offline |
 
 Known pitfall: `faster-whisper 1.2.1` is **incompatible with PyAV 19** — `requirements.txt`
 pins `av==16.0.1`.
+
+## Web mode (LAN / self-host)
+
+The UI is already a web app; the desktop `.app` only wraps it. To serve it to other devices:
+
+```bash
+# on the machine that runs the models
+.venv/bin/python scripts/server.py --host 0.0.0.0 --port 8777 --token RAHASIA
+```
+
+Open `http://<ip-mesin>:8777/?token=RAHASIA` from any browser on the network. The token is stored
+as an HttpOnly cookie after the first visit; requests without it get `401`. Do not bind to
+`0.0.0.0` without a token — that would expose the app to anyone who can reach the host.
+
+Docker (Linux host, CPU inference):
+
+```bash
+docker build -t dikte62 .
+docker run --rm -p 8777:8777 -v dikte62-data:/app/.data \
+  dikte62 python scripts/server.py --host 0.0.0.0 --token RAHASIA
+```
+
+Audio never leaves the host in either mode; only the browser view is remote.
 
 ## Privacy
 
@@ -192,7 +224,9 @@ pins `av==16.0.1`.
 - Document generation needs a Gemini API key; without it the app still transcribes, labels, and
   exports SRT/TXT.
 - No PRD/Confluence/Linear exporters yet.
-- macOS only; the UI is a local web app wrapped in a native `.app` launcher (not Tauri).
+- The `.app` bundle is macOS-only; Windows/Linux use the browser via `run_ui.bat` / `run_ui.sh`.
+- No GPU acceleration on Windows yet for SpeechBrain embeddings (diarization runs on CPU).
+- Docker image is CPU-only and not yet built in CI.
 
 ## Roadmap
 
@@ -205,7 +239,10 @@ pins `av==16.0.1`.
 ## Project structure
 
 ```
-scripts/            pipeline, server, exporters, benchmarks
+scripts/            pipeline, server, exporters, benchmarks, setup.py
+run_ui.bat          launcher Windows
+setup.bat           bootstrap Windows
+Dockerfile          mode web (self-host)
 ui/                 local review UI (vanilla HTML/CSS/JS)
 prompts/            versioned prompts (extract@v1, artifacts@v1)
 schema/             facts JSON schema

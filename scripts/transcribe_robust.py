@@ -11,13 +11,20 @@ benar-benar tidak bisa dipulihkan sebagai "[tidak jelas]".
 """
 
 import argparse
-import fcntl
 import json
 import os
 import re
 import subprocess
 import sys
 import time
+
+try:
+    import fcntl  # POSIX
+except ImportError:  # Windows
+    fcntl = None
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from platform_support import detect_device, ffmpeg_bin  # noqa: E402
 
 ALLOWED_PUNCT = set(" .,?!'-:;\"()/")
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -48,7 +55,7 @@ def fmt_ts(t: float, sep: str = ",") -> str:
 
 
 def probe_duration(path: str) -> float:
-    out = subprocess.run(["ffmpeg", "-hide_banner", "-i", path], capture_output=True, text=True)
+    out = subprocess.run([ffmpeg_bin(), "-hide_banner", "-i", path], capture_output=True, text=True)
     line = [l for l in out.stderr.splitlines() if "Duration" in l][0]
     hh, mm, ss = line.split("Duration:")[1].split(",")[0].strip().split(":")
     return int(hh) * 3600 + int(mm) * 60 + float(ss)
@@ -65,7 +72,10 @@ def run_window(args, start: float, dur: float, temp: float, tag: str):
     t0 = time.time()
     r = subprocess.run(cmd, capture_output=True, text=True, timeout=900)
     if r.returncode != 0 or not os.path.exists(out):
-        return [], time.time() - t0, (r.stderr or "")[-300:]
+        detail = ((r.stderr or "") + (r.stdout or "")).strip().splitlines()
+        tail = detail[-1] if detail else f"exit {r.returncode}"
+        print(f"[warn] jendela gagal: {tail[:200]}", flush=True)
+        return [], time.time() - t0, tail
     data = json.load(open(out))
     os.remove(out)
     return data.get("segments", []), time.time() - t0, ""
@@ -76,8 +86,8 @@ def main() -> None:
     p.add_argument("audio")
     p.add_argument("--outdir", default=".data/out")
     p.add_argument("--model", default="turbo")
-    p.add_argument("--device", default="mps")
-    p.add_argument("--compute", default="float16")
+    p.add_argument("--device", default="auto")
+    p.add_argument("--compute", default="")
     p.add_argument("--lang", default="id")
     p.add_argument("--window", type=float, default=90.0)
     p.add_argument("--limit-seconds", type=float, default=0.0)
@@ -87,9 +97,14 @@ def main() -> None:
     os.makedirs(a.outdir, exist_ok=True)
     base = os.path.splitext(os.path.basename(a.audio))[0]
 
-    # Serialisasi: dua proses ASR bersamaan di MPS menghasilkan teks sampah.
-    lock = open("/tmp/dikte_asr.lock", "w")
-    fcntl.flock(lock, fcntl.LOCK_EX)
+    a.device, a.compute = detect_device(a.device, a.compute)
+
+    # Serialisasi: dua proses ASR bersamaan di GPU yang sama menghasilkan teks sampah.
+    lock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".cache")
+    os.makedirs(lock_path, exist_ok=True)
+    lock = open(os.path.join(lock_path, "asr.lock"), "w")
+    if fcntl:
+        fcntl.flock(lock, fcntl.LOCK_EX)
 
     total = probe_duration(a.audio)
     end_limit = min(total, a.limit_seconds) if a.limit_seconds else total

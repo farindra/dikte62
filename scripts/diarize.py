@@ -11,8 +11,12 @@ dan segmen sangat pendek masih sulit. Hasilnya dipakai sebagai *petunjuk* label
 import argparse
 import json
 import os
+import sys
 import subprocess
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from platform_support import ffmpeg_bin  # noqa: E402
 
 import numpy as np
 import soundfile as sf
@@ -26,9 +30,10 @@ MIN_DUR = 0.5
 
 
 def load_audio(path: str) -> np.ndarray:
-    wav = f"/tmp/dikte_diarize_{os.getpid()}.wav"
+    tmpdir = os.environ.get("TEMP") or os.environ.get("TMPDIR") or "/tmp"
+    wav = os.path.join(tmpdir, f"dikte_diarize_{os.getpid()}.wav")
     subprocess.run(
-        ["ffmpeg", "-v", "error", "-y", "-i", path, "-ar", str(SR), "-ac", "1", wav],
+        [ffmpeg_bin(), "-v", "error", "-y", "-i", path, "-ar", str(SR), "-ac", "1", wav],
         check=True,
     )
     data, sr = sf.read(wav, dtype="float32")
