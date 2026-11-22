@@ -1,12 +1,8 @@
 """Kirim Epic & User Story hasil rapat ke Jira lewat REST API v3.
 
-Konfigurasi (.env):
-  JIRA_BASE_URL=https://perusahaan.atlassian.net
-  JIRA_EMAIL=you@perusahaan.com
-  JIRA_API_TOKEN=xxxx
-  JIRA_PROJECT_KEY=ABC
-  JIRA_EPIC_FIELD=customfield_10014   # opsional (project classic); default pakai "parent"
-  JIRA_SET_PRIORITY=0                 # opsional; 1 untuk mengirim priority
+Kredensial dibaca dari `.data/config.json` (diatur lewat Pengaturan di UI) atau dari
+environment variable untuk pemakaian CLI: JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN,
+JIRA_PROJECT_KEY, JIRA_EPIC_FIELD, JIRA_SET_PRIORITY.
 
 Pemakaian:
   python scripts/jira_push.py --artifacts .data/artifacts.final.json --project ABC

@@ -9,6 +9,7 @@ Local-first: audio never leaves the machine.
 
 [![Platform](https://img.shields.io/badge/platform-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/farindra/dikte62)
 [![Python](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/)
+[![ci](https://github.com/farindra/dikte62/actions/workflows/ci.yml/badge.svg)](https://github.com/farindra/dikte62/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![ASR](https://img.shields.io/badge/ASR-offline%20%C2%B7%20local-brightgreen)](#privacy)
 [![Languages](https://img.shields.io/badge/language-Indonesian%20%C2%B7%20English-orange)](#)

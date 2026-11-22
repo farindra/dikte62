@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # Membuktikan setup.py memilih build Python yang benar untuk OS/arsitektur ini
+      - name: Deteksi target platform
+        run: python scripts/setup.py --dry-run
+
+      # Semua test memakai standard library — tidak perlu install torch/model
+      - name: Unit test
+        run: python -m unittest discover -s tests -v
+
+  package:
+    name: schema & rahasia
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validasi schema dan prompt
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          schema = json.loads(pathlib.Path("schema/facts.schema.json").read_text())
+          assert schema["type"] == "object"
+          for key in ("decisions", "requirements", "action_items", "open_questions"):
+              assert key in schema["properties"], key
+          for prompt in pathlib.Path("prompts").glob("*.md"):
+              assert "PERAN" in prompt.read_text(), prompt
+          print("schema + prompts ok")
+          PY
+
+      - name: Pastikan tidak ada kredensial ter-commit
+        run: |
+          if git grep -nE "(AQ\.Ab8|AIza[0-9A-Za-z_-]{20,}|JIRA_API_TOKEN=[A-Za-z0-9_-]{12,})" -- . ':!.github' ':!docs' ':!tests'; then
+            echo "::error::kredensial terdeteksi di repo"
+            exit 1
+          fi
+          echo "bersih"
