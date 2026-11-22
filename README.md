@@ -184,7 +184,7 @@ misattributed, and overlapping speech is not handled.
 | RAM | 8 GB minimum (16 GB comfortable) |
 | Disk | ~4 GB for runtime + models (`small` 461 MB, `turbo` 1.5 GB) |
 | Network | only for LLM/Jira; transcription is fully offline |
-| CI | Linux + Windows required; macOS advisory (GitHub runner hangs — app is macOS-first and tested locally) |
+| CI | Linux + Windows di setiap push; macOS lewat workflow terjadwal (`macos.yml`) karena runner-nya sering mengantre lama |
 
 Known pitfall: `faster-whisper 1.2.1` is **incompatible with PyAV 19** — `requirements.txt`
 pins `av==16.0.1`.

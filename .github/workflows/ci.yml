@@ -14,15 +14,12 @@ jobs:
     name: ${{ matrix.os }} · py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
-    # macOS runner di GitHub Actions menggantung pada langkah test (belum terjelaskan,
-    # log butuh akses admin). Job macOS tetap dijalankan sebagai advisory.
-    continue-on-error: ${{ matrix.os == 'macos-13' }}
     env:
       PYTHONUTF8: "1"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, windows-latest]
         python: ["3.12"]
 
     steps:

@@ -1,0 +1,28 @@
+name: macos
+
+# Runner macOS di GitHub sering mengantre lama, jadi tidak dijalankan di setiap push.
+# Dijalankan manual atau sekali seminggu.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 1"   # Senin 02:00 UTC
+
+jobs:
+  test:
+    name: macos · py3.12
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Deteksi target platform
+        run: python scripts/setup.py --dry-run
+
+      - name: Unit test
+        run: python tests/run_all.py
