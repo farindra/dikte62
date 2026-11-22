@@ -34,37 +34,9 @@ jobs:
         run: python scripts/setup.py --dry-run
 
       # Semua test memakai standard library — tidak perlu install torch/model.
-      # Dijalankan per modul dengan batas waktu agar tidak pernah menggantung.
+      # Runner per modul (shell-agnostic, aman di bash/PowerShell) + anotasi error.
       - name: Unit test
-        run: |
-          python - <<'PY'
-          import subprocess, sys
-          mods = ["test_syntax", "test_platform", "test_validator",
-                  "test_glossary", "test_render", "test_server"]
-          failed = []
-          for mod in mods:
-              print(f"::group::{mod}", flush=True)
-              try:
-                  r = subprocess.run(
-                      [sys.executable, "-m", "unittest", "-v", mod],
-                      cwd="tests", timeout=120, encoding="utf-8", errors="replace",
-                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                  )
-                  print(r.stdout, flush=True)
-                  if r.returncode:
-                      failed.append(mod)
-              except subprocess.TimeoutExpired as e:
-                  partial = e.stdout or ""
-                  if isinstance(partial, bytes):
-                      partial = partial.decode("utf-8", "replace")
-                  print(partial, flush=True)
-                  print(f"::error::{mod} melebihi 120 detik", flush=True)
-                  failed.append(mod)
-              print("::endgroup::", flush=True)
-          if failed:
-              print("::error::modul gagal: " + ", ".join(failed), flush=True)
-              sys.exit(1)
-          PY
+        run: python tests/run_all.py
 
   package:
     name: schema & rahasia
