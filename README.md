@@ -212,6 +212,22 @@ docker run --rm -p 8777:8777 -v dikte62-data:/app/.data \
 
 Audio never leaves the host in either mode; only the browser view is remote.
 
+**Docker, measured** (macOS host, Docker Desktop with 8 vCPU / 4 GB, image 2.9 GB):
+
+| Check | Result |
+|---|---|
+| UI, `/api/meetings`, `/api/settings` | 200 |
+| Token mode (401 / 302 + cookie / 200) | works |
+| Test suite inside the container | 31/31 pass |
+| Real transcription, `small` on CPU | RTF **0.18** (25 s audio → 140 s), 11 segments |
+
+CPU-only inference is roughly **14× slower** than native Metal on the same machine
+(RTF 2.57), and 4 GB of container memory is tight for `turbo`. Use Docker for a Linux
+server with many cores (or `--gpus all` with CUDA wheels), not for daily use on a Mac.
+
+If `docker build` fails with `buildx … operation not permitted` in a restricted
+environment, fall back to the legacy builder: `DOCKER_BUILDKIT=0 docker build -t dikte62 .`
+
 ## Privacy
 
 - Audio and transcripts never leave the machine; only text is sent to the LLM, and only when you
