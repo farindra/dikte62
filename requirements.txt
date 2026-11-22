@@ -1,0 +1,25 @@
+# Runtime dependensi Dikte62 (Python 3.12)
+# Pasang dengan: .venv/bin/pip install -r requirements.txt
+
+# ASR
+faster-whisper==1.2.1
+ctranslate2==4.9.0
+av==16.0.1                 # PyAV; 1.2.1 tidak kompatibel dengan PyAV >= 17
+numpy==2.5.5
+
+# Diarisasi speaker
+speechbrain==1.1.2
+torch==2.15.0
+torchaudio==2.11.1
+scikit-learn==1.9.1
+soundfile==0.14.0
+onnxruntime==1.32.0        # VAD (silero) di faster-whisper
+
+# Utilitas
+imageio-ffmpeg==0.8.1      # ffmpeg statis, tanpa brew
+python-docx==1.2.0
+pillow==13.0.0
+
+# Opsional:
+#   openai-whisper  → hanya untuk benchmark engine referensi (lihat README → Benchmarking)
+#   playwright      → hanya untuk screenshot otomatis (scripts/_shot.py)

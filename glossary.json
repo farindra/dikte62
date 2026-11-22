@@ -1,0 +1,22 @@
+{
+  "confirmed": [
+    { "from": "rempoha", "to": "Rempoa", "note": "nama kantor cabang" },
+    { "from": "rompohak", "to": "Rempoa", "note": "varian pengucapan dari 'Rempoa'" },
+    { "from": "rempoa", "to": "Rempoa", "note": "nama kantor cabang" },
+    { "from": "rubus", "to": "rumus", "note": "istilah perhitungan" },
+    { "from": "eligibel", "to": "eligible", "note": "istilah kelayakan" },
+    { "from": "plan cicilan", "to": "plan cicilan", "note": "nama fitur cicilan barang" }
+  ],
+  "tentative": [
+    {
+      "from": "kelasi",
+      "to": "kelas",
+      "note": "kemungkinan yang dimaksud adalah 'kelas' (golongan/kelompok karyawan). BELUM dikonfirmasi — jangan diganti otomatis."
+    },
+    {
+      "from": "baku",
+      "to": "baku",
+      "note": "dipakai dalam konteks 'ketentuan baku' — sudah benar."
+    }
+  ]
+}

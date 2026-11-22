@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dikte62 — Review Rapat</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="backdrop" id="backdrop" hidden></div>
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>Dikte62</h1>
+      <p>Rekam. Ringkas. Rilis.</p>
+      <button id="settingsBtn" class="gear" title="Pengaturan">⚙</button>
+    </div>
+    <div class="new-meeting">
+      <button id="pickBtn" class="btn primary" style="width:100%">+ Proses rekaman</button>
+      <input type="file" id="fileInput" accept="audio/*,video/*" hidden>
+    </div>
+    <div id="jobs"></div>
+    <div class="listbar">
+      <div class="search">
+        <svg class="mag" viewBox="0 0 24 24" width="14" height="14" fill="none"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/>
+        </svg>
+        <input id="searchInput" type="search" placeholder="Cari rapat…" autocomplete="off">
+      </div>
+      <button class="sortbtn" id="sortBtn" title="Urutkan" aria-label="Urutkan">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 4v16M7 20l-3-3M7 20l3-3"/><path d="M17 20V4M17 4l-3 3M17 4l3 3"/>
+        </svg>
+      </button>
+    </div>
+    <div class="meeting-list" id="meetings"><div class="empty">Memuat…</div></div>
+  </aside>
+
+  <main class="main">
+    <div class="mbar">
+      <button class="iconbtn" id="drawerBtn" title="Daftar rapat">☰</button>
+      <span id="mTitle">Dikte62</span>
+      <button class="iconbtn" id="mSettingsBtn" title="Pengaturan">⚙</button>
+    </div>
+    <div class="topbar">
+      <div>
+        <h2 id="title">Pilih rapat</h2>
+        <div class="sub" id="sub">—</div>
+      </div>
+      <audio id="player" controls preload="metadata" style="display:none"></audio>
+    </div>
+
+    <div class="split">
+      <section class="pane transcript" id="transcriptPane">
+        <p class="pane-title">Transkrip</p>
+        <div id="transcript"><div class="empty">Belum ada rapat dipilih.</div></div>
+      </section>
+
+      <section class="pane" id="artifactPane">
+        <div id="tabs" class="tabs"></div>
+        <div id="content"><div class="empty">Pilih rapat di kiri.</div></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="modal" id="settingsModal" hidden>
+  <div class="sheet">
+    <header>
+      <h2>Pengaturan</h2>
+      <button class="close" id="settingsClose" title="Tutup">×</button>
+    </header>
+
+    <section>
+      <h3>Gemini (ekstraksi &amp; dokumen)</h3>
+      <label>API key
+        <input id="setGeminiKey" type="password" autocomplete="off" placeholder="belum diisi">
+      </label>
+      <label>Model
+        <select id="setGeminiModel">
+          <option value="gemini-3.6-flash">gemini-3.6-flash (seimbang)</option>
+          <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (cepat/hemat)</option>
+          <option value="gemini-3.8-flash">gemini-3.8-flash (terbaru)</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro (paling teliti)</option>
+        </select>
+      </label>
+      <div class="row">
+        <button class="btn" id="testGemini">Tes koneksi</button>
+        <span class="status" id="geminiStatus"></span>
+      </div>
+    </section>
+
+    <section>
+      <h3>Jira</h3>
+      <label>Base URL <input id="setJiraBase" placeholder="https://perusahaan.atlassian.net" autocomplete="off"></label>
+      <label>Email <input id="setJiraEmail" placeholder="you@perusahaan.com" autocomplete="off"></label>
+      <label>API token <input id="setJiraToken" type="password" autocomplete="off" placeholder="belum diisi"></label>
+      <label>Kode proyek <input id="setJiraProject" placeholder="ABC" autocomplete="off"></label>
+      <label>Epic field <span class="hint">(kosongkan untuk project team-managed)</span>
+        <input id="setJiraEpic" placeholder="customfield_10014" autocomplete="off">
+      </label>
+      <label class="check"><input id="setJiraPriority" type="checkbox"> Kirim prioritas</label>
+      <div class="row">
+        <button class="btn" id="testJira">Tes koneksi</button>
+        <span class="status" id="jiraStatus"></span>
+      </div>
+    </section>
+
+    <footer>
+      <button class="btn danger" id="clearKeys">Hapus kredensial</button>
+      <span class="spacer"></span>
+      <span class="status" id="saveStatus"></span>
+      <button class="btn primary" id="saveSettings">Simpan</button>
+    </footer>
+  </div>
+</div>
+
+<div class="ctx" id="sortMenu" hidden></div>
+<div class="ctx" id="ctxMenu" hidden>
+  <button data-act="archive">Arsipkan</button>
+  <button data-act="delete" class="danger">Hapus permanen…</button>
+</div>
+
+<footer class="appfooter">
+  <b>Dikte62</b>
+  <span class="sep">·</span>
+  <span>Powered by <a href="https://farindra.com" target="_blank" rel="noopener noreferrer">Farindra Projects</a></span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

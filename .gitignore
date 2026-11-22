@@ -1,0 +1,32 @@
+# --- runtime & cache (dibuat oleh scripts/setup_runtime.sh) ---
+.venv/
+.runtime/
+.cache/
+
+# --- data kerja: rapat, transkrip, dokumen, kredensial ---
+.data/
+docs/generated/
+
+# --- media & rekaman ---
+*.mp3
+*.wav
+*.m4a
+*.mp4
+*.mov
+
+# --- repo referensi (clone terpisah, lihat README) ---
+whisper/
+
+# --- hasil build macOS ---
+*.app/
+
+# --- rahasia ---
+.env
+.env.bak
+
+# --- python ---
+__pycache__/
+*.pyc
+
+# --- OS ---
+.DS_Store
