@@ -143,6 +143,7 @@ Everything the UI does is also a script:
 | `scripts/run_pipeline.py` | orchestrates everything for one recording |
 | `scripts/setup.py` | cross-platform bootstrap (Python portabel + venv + ffmpeg) |
 | `scripts/platform_support.py` | device auto-detect (mps/cuda/cpu) + lokasi ffmpeg |
+| `scripts/make_icons.py` | render `assets/icon.svg` → favicon + `AppIcon.icns` |
 | `scripts/validate_facts.py` | enforces evidence, timestamps, enums, IDs |
 
 Example:
@@ -257,6 +258,7 @@ environment, fall back to the legacy builder: `DOCKER_BUILDKIT=0 docker build -t
 ## Project structure
 
 ```
+assets/             icon.svg (sumber ikon) + icon-1024.png + AppIcon.icns
 scripts/            pipeline, server, exporters, benchmarks, setup.py
 run_ui.bat          launcher Windows
 setup.bat           bootstrap Windows
@@ -270,7 +272,8 @@ schema + prompts    are intentionally plain files: reviewable and diffable
 
 ## Credits
 
-Built by **[Farindra Projects](https://farindra.com)**.
+Built by **[Farindra Projects](https://farindra.com)**. Icon: original artwork
+(`assets/icon.svg`) — a speaker wearing a *peci*, with voice waves.
 
 Standing on the shoulders of: [OpenAI Whisper](https://github.com/openai/whisper) (MIT),
 [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (MIT),

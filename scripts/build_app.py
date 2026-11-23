@@ -107,24 +107,30 @@ def main() -> None:
         f.write(LAUNCHER.replace("__ROOT__", ROOT).replace("__PORT__", str(PORT)))
     os.chmod(exe, 0o755)
 
-    # ikon
-    iconset = os.path.join(APP, "Contents/Resources/Dikte.iconset")
-    os.makedirs(iconset, exist_ok=True)
-    base = os.path.join(iconset, "base.png")
-    make_icon(base)
-    src = Image.open(base)
-    for s in (16, 32, 64, 128, 256, 512, 1024):
-        src.resize((s, s), Image.LANCZOS).save(os.path.join(iconset, f"icon_{s}x{s}.png"))
-        if s <= 512:
-            src.resize((s * 2, s * 2), Image.LANCZOS).save(os.path.join(iconset, f"icon_{s}x{s}@2x.png"))
-    os.remove(base)
-    try:
-        subprocess.run(["iconutil", "-c", "icns", iconset,
-                        "-o", os.path.join(APP, "Contents/Resources/AppIcon.icns")], check=True)
-        shutil.rmtree(iconset)
-        print("[ok] ikon .icns dibuat")
-    except Exception as e:  # noqa: BLE001
-        print(f"[warn] iconutil gagal: {e}")
+    # ikon: pakai assets/AppIcon.icns bila ada, kalau tidak render dari kode lama
+    icns_src = os.path.join(ROOT, "assets", "AppIcon.icns")
+    icns_dst = os.path.join(APP, "Contents/Resources/AppIcon.icns")
+    if os.path.exists(icns_src):
+        shutil.copy(icns_src, icns_dst)
+        print("[ok] ikon dari assets/AppIcon.icns")
+    else:
+        iconset = os.path.join(APP, "Contents/Resources/Dikte.iconset")
+        os.makedirs(iconset, exist_ok=True)
+        base = os.path.join(iconset, "base.png")
+        make_icon(base)
+        src = Image.open(base)
+        for s_ in (16, 32, 64, 128, 256, 512, 1024):
+            src.resize((s_, s_), Image.LANCZOS).save(os.path.join(iconset, f"icon_{s_}x{s_}.png"))
+            if s_ <= 512:
+                src.resize((s_ * 2, s_ * 2), Image.LANCZOS).save(
+                    os.path.join(iconset, f"icon_{s_}x{s_}@2x.png"))
+        os.remove(base)
+        try:
+            subprocess.run(["iconutil", "-c", "icns", iconset, "-o", icns_dst], check=True)
+            shutil.rmtree(iconset)
+            print("[ok] ikon .icns dibuat")
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] iconutil gagal: {e}")
 
     print(f"[ok] {APP}")
     print(f"     executable: {os.path.relpath(exe, ROOT)}")

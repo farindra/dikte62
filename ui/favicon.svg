@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#2A3F9E"/>
+      <stop offset="0.55" stop-color="#1B2A72"/>
+      <stop offset="1" stop-color="#111A47"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#F7D48C"/>
+      <stop offset="0.55" stop-color="#E0A93F"/>
+      <stop offset="1" stop-color="#B87A1E"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E4E9F7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- latar -->
+  <rect width="1024" height="1024" rx="232" fill="url(#bg)"/>
+
+  <!-- motif kawung (batik) -->
+  <g fill="#FFFFFF" opacity="0.055">
+    <circle cx="188" cy="188" r="52"/>
+    <circle cx="836" cy="188" r="52"/>
+    <circle cx="188" cy="836" r="52"/>
+    <circle cx="836" cy="836" r="52"/>
+    <circle cx="512" cy="120" r="34"/>
+    <circle cx="512" cy="904" r="34"/>
+  </g>
+
+  <!-- bahu -->
+  <path d="M292 844c0-142 96-214 220-214s220 72 220 214z" fill="url(#face)"/>
+
+  <!-- leher -->
+  <rect x="462" y="596" width="100" height="84" rx="30" fill="#D8DFF1"/>
+
+  <!-- kepala -->
+  <circle cx="512" cy="486" r="152" fill="url(#face)"/>
+
+  <!-- peci (songkok) -->
+  <g>
+    <path d="M396 304h232q16 0 19 15l14 52q3 12-9 12H372q-12 0-9-12l14-52q3-15 19-15z"
+          fill="url(#gold)"/>
+    <path d="M372 358h280q12 0 9 12l-3 10q-2 8-10 8H376q-8 0-10-8l-3-10q-3-12 9-12z"
+          fill="#B87A1E" opacity="0.55"/>
+    <path d="M404 316h96q10 0 11 9t-9 9h-96q-10 0-11-9t9-9z" fill="#FFFFFF" opacity="0.22"/>
+  </g>
+
+  <!-- gelombang suara -->
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round">
+    <path d="M720 430c34 34 34 78 0 112" stroke-width="26"/>
+    <path d="M792 388c64 58 64 138 0 196" stroke-width="24" opacity="0.85"/>
+    <path d="M862 344c96 84 96 200 0 284" stroke-width="20" opacity="0.55"/>
+  </g>
+
+</svg>
