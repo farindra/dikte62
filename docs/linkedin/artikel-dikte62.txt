@@ -1,0 +1,121 @@
+DIKTE62 — DARI REKAMAN RAPAT JADI USER STORY SIAP MASUK JIRA
+
+(LINKEDIN ARTICLE — tempel ke "Write article". Baris pertama = judul.)
+
+
+JUDUL
+Lupa Requirement Bukan Soal Ingatan, tapi Soal Tidak Ada Sumber Kebenaran
+
+
+SUBJUDUL
+Kenapa saya merekam semua meeting, lalu membangun alat yang mengubahnya jadi BRD, Epic, dan User Story yang bisa ditelusuri kembali ke detik keberapa hal itu dibicarakan.
+
+
+--- BODY ---
+
+Pernah berada di posisi ini?
+
+Sprint berjalan, tiba-tiba developer bilang: "Ini kan nggak sesuai requirement."
+Product Owner menjawab: "Dari awal saya minta seperti ini."
+Anda membuka catatan rapat, isinya setengah baris: "bahas fitur pembayaran, lanjut minggu depan."
+
+Lalu debat kusir. Bukan karena ada yang berniat salah, tapi karena semua orang mengandalkan ingatan — dan ingatan memburuk sebanding dengan jumlah rapat minggu itu.
+
+Saya sudah mengalami ini berkali-kali sebagai bagian dari tim produk. Dan kesimpulan saya: masalahnya bukan disiplin mencatat. Masalahnya adalah kita tidak punya satu sumber kebenaran yang bisa dibuka lagi kapan saja.
+
+
+MENGAPA CATATAN SELALU KURANG
+
+Ketika Anda mencatat sambil mendengarkan, perhatian Anda terbagi. Yang tercatat adalah yang paling menonjol, bukan yang paling penting. Kalimat seperti "kalau customer ganti paket di tengah periode, prorate-nya bagaimana?" sering hilang — padahal justru itu yang nanti jadi bug atau rework.
+
+Yang juga hilang: siapa yang mengatakan apa. Tanpa itu, action item jadi kabur. "Nanti dikirim" — dikirim oleh siapa, kapan?
+
+
+YANG SUDAH SAYA COBA
+
+Solusi paling mudah dan paling aman: rekam rapat dari awal sampai akhir. Tidak perlu mencatat, kecuali poin yang benar-benar krusial.
+
+Setelah itu, transkripsi. Sekarang sudah banyak alat yang mengubah audio atau video jadi teks, dan untuk merangkum, Gemini Notebook termasuk yang paling nyaman.
+
+Tapi sampai di situ, pekerjaan sebenarnya baru dimulai. Anda masih harus:
+
+• membaca transkrip panjang dan menandai keputusan
+• menulis ulang jadi BRD atau PRD
+• memecahnya jadi Epic
+• menulis User Story beserta acceptance criteria
+• memindahkannya satu per satu ke Jira
+
+Dan ketika developer bertanya "dasarnya dari mana?", Anda tetap harus memutar ulang rekaman untuk mencari menitnya.
+
+Transkrip bukan dokumen kerja. Ringkasan juga bukan. Yang dibutuhkan tim adalah artefak yang siap dipakai — dan bisa dipertanggungjawabkan.
+
+
+MAKA SAYA BANGUN DIKTE62
+
+Namanya diambil dari "dikte": mendiktekan. Alurnya satu tarikan:
+
+rekam → transkrip → label pembicara → keputusan, action item, open question → BRD, Epic, User Story → review → DOCX, CSV, atau langsung ke Jira
+
+Ada empat prinsip yang saya pegang, dan ini yang membedakannya dari alat notulen biasa.
+
+1. Setiap pernyataan punya bukti.
+Keputusan, requirement, dan action item wajib menunjuk ke timestamp dan kutipan dari transkrip. Anda bisa klik buktinya, audio langsung melompat ke detik itu.
+
+2. Tidak mengarang.
+Kalau sesuatu tidak dibahas di rapat, alat ini tidak mengisinya. Item tanpa bukti dipindahkan ke daftar "perlu konfirmasi". Jadi dokumennya jujur: yang belum jelas ditandai belum jelas, bukan ditutupi dengan paragraf yang terdengar meyakinkan.
+
+3. Manusia tetap menyetujui.
+Tidak ada dokumen yang terkirim ke stakeholder tanpa Anda review dan approve. Layarnya dua panel: transkrip di kiri, dokumen di kanan.
+
+4. Audio tetap di mesin Anda.
+Transkripsi berjalan lokal di laptop. Yang keluar hanya teks, itu pun saat Anda minta dokumen dibuat.
+
+
+SEPERTI APA HASILNYA
+
+Dari rekaman rapat 40 menit, di laptop M1 8 GB:
+
+• transkrip 618 segmen, selesai dalam sekitar 15 menit
+• label pembicara otomatis, bisa diganti nama asli
+• 5–6 keputusan, 7–10 kebutuhan, beberapa action item, plus daftar open question
+• 3–4 Epic dan 8–12 User Story dengan acceptance criteria format Given/When/Then
+• ekspor ke Word, CSV untuk impor Jira, atau kirim langsung lewat API Jira
+
+Waktu yang paling terasa hemat bukan saat menulis dokumennya, tapi saat rapat berikutnya: "ini kan sudah diputuskan tanggal 18, di menit 26, oleh Rina." Perdebatan selesai dalam hitungan detik, bukan setengah jam.
+
+
+YANG JUJUR SOAL BATASANNYA
+
+Saya tidak mau menjual ini sebagai solusi ajaib.
+
+• Akurasi transkripsi bagus untuk audio bersih, tapi turun pada rapat dengan mic jauh dan suara tumpang tindih. Nama orang dan istilah internal masih perlu glosarium.
+• Pemisahan pembicara masih heuristik. Untuk rapat dengan suara yang mirip, labelnya bisa tertukar.
+• Pembuatan dokumen membutuhkan API key model bahasa. Tanpa itu, alat ini tetap bisa transkrip dan ekspor subtitle.
+• Hasil terbaik tetap datang dari review manusia. Alat ini memangkas 70–80% pekerjaan menulis, bukan 100%.
+
+
+UNTUK SIAPA
+
+Scrum Master yang menulis notulen dan action item.
+Developer yang lelah mendengar "itu kan sudah dibahas".
+Product Owner yang ingin requirement-nya terdokumentasi tanpa menulis BRD dari nol.
+Team Lead yang harus menyerahkan dokumen ke stakeholder dan tim developer sekaligus.
+
+
+SILAKAN DICOBA DAN DIKONTRIBUSI
+
+Repositorinya terbuka, lisensi MIT:
+github.com/farindra/dikte62
+
+Jalankan di macOS, Windows, atau Linux. Ada mode aplikasi desktop dan mode web untuk diakses dari jaringan kantor.
+
+Kalau Anda punya ide, temuan bug, atau mau menambah ekspor ke Linear dan Confluence — pull request sangat diterima. Kalau mau sekadar berbagi pengalaman soal rapat yang paling sering jadi sumber salah paham, tulis di komentar. Saya penasaran apakah masalahnya sama di tim lain.
+
+
+PENUTUP
+
+Rapat yang baik tidak berhenti saat semua orang keluar dari ruangan. Ia berhenti saat keputusannya tercatat, bisa dicari, dan bisa dipertanggungjawabkan.
+
+Rekam. Ringkas. Rilis.
+
+#ProductManagement #Scrum #SoftwareDevelopment #RequirementEngineering #Jira #OpenSource #AI #SpeechToText #Indonesia

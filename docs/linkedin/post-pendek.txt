@@ -1,0 +1,51 @@
+POST PENDEK (FEED) — maksimal 3.000 karakter
+Tempel apa adanya. Jangan pakai ** atau # di tengah kalimat.
+Tiga baris pertama yang terlihat sebelum "see more" — jangan diubah urutannya.
+
+
+--- ISI POST ---
+
+"Kan dari awal saya minta seperti ini."
+"Setahu saya bukan begitu."
+
+Dua kalimat ini adalah awal dari debat kusir yang tidak perlu. Bukan karena ada yang salah niat, tapi karena tidak ada yang bisa membuka bukti.
+
+Saya sudah coba jalan yang paling aman: rekam rapat dari awal sampai akhir, lalu transkrip. Gemini Notebook enak untuk merangkum. Tapi setelah itu tetap manual: baca transkrip, tulis BRD, pecah jadi Epic, tulis User Story, pindahkan ke Jira.
+
+Jadi saya bangun Dikte62.
+
+Satu alur: rekam → transkrip → label pembicara → keputusan dan action item → BRD, Epic, User Story → review → Word, CSV, atau langsung ke Jira.
+
+Yang membuatnya beda:
+
+• Setiap keputusan dan requirement punya bukti: timestamp dan kutipan. Klik, audio langsung melompat ke detik itu.
+• Kalau tidak dibahas di rapat, tidak dikarang. Masuk daftar "perlu konfirmasi".
+• Anda review dan approve dulu sebelum dokumen dikirim.
+
+Rapat 40 menit, di laptop M1 8 GB: 618 segmen transkrip dalam ±15 menit, lalu 3–4 Epic dan 8–12 User Story dengan acceptance criteria Given/When/Then.
+
+Batasan yang saya akui: akurasi turun pada mic jauh dan suara tumpang tindih, nama orang masih perlu glosarium, dan pembuatan dokumen butuh API key model bahasa. Alat ini memangkas 70–80% kerja menulis, bukan 100%.
+
+Terbuka, MIT, jalan di macOS, Windows, dan Linux:
+github.com/farindra/dikte62
+
+Kalau ada yang mau dicoba, silakan. Kalau mau kontribusi — ekspor Linear atau Confluence masih kosong tuh.
+
+#Scrum #SoftwareDevelopment #RequirementEngineering #Jira #OpenSource #AI #Indonesia
+
+
+--- KOMENTAR PERTAMA (tempel sendiri setelah posting) ---
+
+Link repo langsung: github.com/farindra/dikte62
+
+Untuk yang penasaran teknisnya: transkripsi jalan lokal (Whisper large-v3-turbo), ekstraksi fakta pakai API model bahasa dengan skema JSON yang mewajibkan bukti per item, dan dokumennya dirender dari JSON itu. Jadi konsisten dan bisa dibuat ulang.
+
+Satu catatan kecil: pemisahan pembicara masih heuristik. Kalau audio rapatnya dari satu mic di ujung meja, labelnya bisa tertukar. Itu yang sedang saya perbaiki.
+
+
+--- CATATAN POSTING ---
+
+• Gambar: pakai docs/screenshots/desktop.png (tampilan review dua panel). Bisa juga 2 gambar: desktop + settings.
+• Jangan menaruh link di badan post kalau ingin jangkauan maksimal — taruh di komentar pertama, seperti di atas.
+• Waktu posting: Selasa–Kamis, 08.00–10.00 WIB.
+• Balas komentar dalam 1 jam pertama; LinkedIn menilai itu sebagai sinyal percakapan.
