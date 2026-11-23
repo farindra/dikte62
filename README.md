@@ -72,9 +72,9 @@ Every artefact keeps the model and prompt version that produced it.
 |---|---|
 | ![Desktop](docs/screenshots/desktop.png) | ![Mobile](docs/screenshots/mobile.png) |
 
-| Speaker labelling | Sorting |
+| Speaker labelling | Settings (credentials live here) |
 |---|---|
-| ![Speakers](docs/screenshots/speakers.png) | ![Sort](docs/screenshots/sort-menu.png) |
+| ![Speakers](docs/screenshots/speakers.png) | ![Settings](docs/screenshots/settings.png) |
 
 ## Quick start
 

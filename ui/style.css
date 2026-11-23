@@ -463,7 +463,7 @@ a.dl span { color: var(--muted); font-size: 12px; }
 .speakers input {
   font: inherit; font-size: 12px;
   border: 1px solid var(--line); border-radius: 7px;
-  padding: 4px 8px; width: 130px; flex: 0 0 auto; background: #fff;
+  padding: 4px 8px; width: 112px; flex: 0 0 auto; background: #fff;
 }
 .speakers input:focus { outline: 2px solid #cddcff; border-color: var(--accent); }
 .speakers .hint {
